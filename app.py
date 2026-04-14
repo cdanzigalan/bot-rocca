@@ -6,10 +6,15 @@ import os
 app = Flask(__name__)
 
 VERIFY_TOKEN = "carla123"
-ACCESS_TOKEN = "EAAWpLJ0IMf4BRIQvuRH6ZCcFxrxOdbLbWjKQZBFiN1zf4DOR9ylZBXsG4TmMXtuoGYLelsUtvcNF5rbZCwjs1EtIqdGffVSfSrLDKOZBK7goRwhgzd7YZCwxoIifev6aPa6XWSuZCBFytSswPXfrimXsNEx8yVwcA6dD1b2p1qDDETZADyahPKMVZAC6QjG6ZCym7bUHCurbUEERLlDRV1n4bUMKkoMxwq95oEisGT6w2Tb7vy82uuNK0YMgAQ8FZBRZC1tEps2EoocjNCnpAAr9s4vofSSG"
-PHONE_NUMBER_ID = "1038275629374379"
+ACCESS_TOKEN = os.environ.get("EAAWpLJ0IMf4BRPnCjQkU3NFRxQmBYyic7TSXKEPffZCk4mECM9votZBxKjFGQIIPKVcxEToIpXRbxphL4S9Wos0wgsUwEiUTaSBN13HrITUg7wsc3jn0yL2zqDnezvvSChZAzLBfZBi0xfXKPedrLtAT7uZBfaZAZAH6WqjYp5bKUT4DkOzjP51If6GCJ1XTF61tjI44bgwsq5xltQnAC1hAD6KdTFhSShXA7C3xNib6jRo4ZCppivKj7Nx0IimO6b8kdgnEF3OG4jWEA5HtknOAu5lW")
+PHONE_NUMBER_ID = os.environ.get("1038275629374379")
 
 usuarios = {}
+
+
+@app.route("/", methods=["GET"])
+def home():
+    return "Bot Rocca rodando 🚀", 200
 
 
 @app.route("/webhook", methods=["GET", "POST"])
@@ -19,39 +24,65 @@ def webhook():
         token = request.args.get("hub.verify_token")
         challenge = request.args.get("hub.challenge")
 
+        print("\n🔎 GET recebido no webhook", flush=True)
+        print("mode:", mode, flush=True)
+        print("token:", token, flush=True)
+        print("challenge:", challenge, flush=True)
+
         if mode == "subscribe" and token == VERIFY_TOKEN:
             return challenge, 200
         return "Erro", 403
 
     if request.method == "POST":
-        data = request.get_json()
-        print("\n📥 DADOS RECEBIDOS:")
-        print(data)
-
         try:
-            value = data["entry"][0]["changes"][0]["value"]
+            data = request.get_json(silent=True)
+            print("\n📥 DADOS RECEBIDOS:", flush=True)
+            print(data, flush=True)
+
+            if not data:
+                print("⚠️ Nenhum JSON recebido.", flush=True)
+                return "ok", 200
+
+            entry = data.get("entry", [])
+            if not entry:
+                print("⚠️ Sem 'entry' no payload.", flush=True)
+                return "ok", 200
+
+            changes = entry[0].get("changes", [])
+            if not changes:
+                print("⚠️ Sem 'changes' no payload.", flush=True)
+                return "ok", 200
+
+            value = changes[0].get("value", {})
 
             if "messages" in value:
                 mensagem = value["messages"][0]
-                numero = mensagem["from"]
+                numero = mensagem.get("from", "")
                 texto = mensagem.get("text", {}).get("body", "").strip()
 
-                print("\n📩 Mensagem recebida de:", numero)
-                print("Texto:", texto)
+                print("\n📩 Mensagem recebida de:", numero, flush=True)
+                print("Texto:", texto, flush=True)
+
+                if not texto:
+                    print("⚠️ Mensagem sem texto.", flush=True)
+                    return "ok", 200
 
                 resposta = processar_mensagem(numero, texto)
 
-                print("\n🤖 RESPOSTA DO BOT:")
-                print(resposta)
+                print("\n🤖 RESPOSTA DO BOT:", flush=True)
+                print(resposta, flush=True)
 
                 enviar_mensagem(numero, resposta)
 
             elif "statuses" in value:
-                print("\n📊 Status da Meta:")
-                print(value["statuses"])
+                print("\n📊 Status da Meta:", flush=True)
+                print(value["statuses"], flush=True)
+
+            else:
+                print("⚠️ Evento sem messages e sem statuses.", flush=True)
 
         except Exception as e:
-            print("\n❌ Erro ao processar webhook:", e)
+            print("\n❌ ERRO REAL:", repr(e), flush=True)
 
         return "ok", 200
 
@@ -121,8 +152,8 @@ def processar_mensagem(numero, texto):
     if etapa == "financeiro_assunto":
         usuarios[numero]["assunto"] = texto
 
-        print("\n🔥 NOVO ATENDIMENTO FINANCEIRO")
-        print(usuarios[numero])
+        print("\n🔥 NOVO ATENDIMENTO FINANCEIRO", flush=True)
+        print(usuarios[numero], flush=True)
 
         salvar_atendimento("Financeiro", {
             "telefone": numero,
@@ -141,8 +172,8 @@ def processar_mensagem(numero, texto):
     if etapa == "manutencao_problema":
         usuarios[numero]["problema"] = texto
 
-        print("\n🔧 NOVO CHAMADO DE MANUTENÇÃO")
-        print(usuarios[numero])
+        print("\n🔧 NOVO CHAMADO DE MANUTENÇÃO", flush=True)
+        print(usuarios[numero], flush=True)
 
         salvar_atendimento("Manutenção/Desocupação", {
             "telefone": numero,
@@ -200,8 +231,8 @@ def processar_mensagem(numero, texto):
     if etapa == "comprar_financiamento":
         usuarios[numero]["financiamento"] = texto
 
-        print("\n🏡 NOVO LEAD DE COMPRA")
-        print(usuarios[numero])
+        print("\n🏡 NOVO LEAD DE COMPRA", flush=True)
+        print(usuarios[numero], flush=True)
 
         salvar_atendimento("Compra", {
             "telefone": numero,
@@ -227,8 +258,8 @@ def processar_mensagem(numero, texto):
     if etapa == "alugar_tipo":
         usuarios[numero]["tipo_imovel"] = texto
 
-        print("\n🏠 NOVO LEAD DE LOCAÇÃO")
-        print(usuarios[numero])
+        print("\n🏠 NOVO LEAD DE LOCAÇÃO", flush=True)
+        print(usuarios[numero], flush=True)
 
         salvar_atendimento("Locação", {
             "telefone": numero,
@@ -248,8 +279,8 @@ def processar_mensagem(numero, texto):
     if etapa == "investir_objetivo":
         usuarios[numero]["objetivo"] = texto
 
-        print("\n💰 NOVO LEAD INVESTIDOR")
-        print(usuarios[numero])
+        print("\n💰 NOVO LEAD INVESTIDOR", flush=True)
+        print(usuarios[numero], flush=True)
 
         salvar_atendimento("Investidor", {
             "telefone": numero,
@@ -268,8 +299,8 @@ def processar_mensagem(numero, texto):
     if etapa == "corretor_assunto":
         usuarios[numero]["assunto"] = texto
 
-        print("\n📞 SOLICITAÇÃO DE CORRETOR")
-        print(usuarios[numero])
+        print("\n📞 SOLICITAÇÃO DE CORRETOR", flush=True)
+        print(usuarios[numero], flush=True)
 
         salvar_atendimento("Falar com corretor", {
             "telefone": numero,
@@ -312,11 +343,9 @@ def enviar_mensagem(numero, texto):
     }
 
     resposta = requests.post(url, headers=headers, json=payload)
-    print("\n📤 STATUS ENVIO:", resposta.status_code)
-    print("RESPOSTA META:", resposta.text)
+    print("\n📤 STATUS ENVIO:", resposta.status_code, flush=True)
+    print("RESPOSTA META:", resposta.text, flush=True)
 
-
-import os
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
