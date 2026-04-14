@@ -330,9 +330,9 @@ def salvar_atendimento(tipo, dados):
 def enviar_mensagem(numero, texto):
     url = f"https://graph.facebook.com/v25.0/{PHONE_NUMBER_ID}/messages"
 
-    print(
-        "EAAWpLJ0IMf4BRBPfkoXqHVZABAFvhBsMFDs1wrNYwLzr6EJ9GfaXL22CddnEX50ERpeUG45QA3zVRYjzctUi2TkGCFbH28RmsBCvUrZAKoYJBbVQNBp3ODrHo26KsjJa8FxdgJOo3oE8wlz5V8XO9RmShf7ZCw9spYkmavtPusL4HojuevwO2e3jNzAFN4f6oFW7pai3KZBktYmMWBCWaKARCqtjyZBMR1gHKZCjpM3RgZBLUWJPUEbvYcB7rWcxfLlWT7IoxSpMOIiGMPuswSanZC1VL70ZD",
-        ACCESS_TOKEN[:20])
+    print("TOKEN USADO:",
+          EAAWpLJ0IMf4BRBPfkoXqHVZABAFvhBsMFDs1wrNYwLzr6EJ9GfaXL22CddnEX50ERpeUG45QA3zVRYjzctUi2TkGCFbH28RmsBCvUrZAKoYJBbVQNBp3ODrHo26KsjJa8FxdgJOo3oE8wlz5V8XO9RmShf7ZCw9spYkmavtPusL4HojuevwO2e3jNzAFN4f6oFW7pai3KZBktYmMWBCWaKARCqtjyZBMR1gHKZCjpM3RgZBLUWJPUEbvYcB7rWcxfLlWT7IoxSpMOIiGMPuswSanZC1VL70ZD[
+              :20])
 
     headers = {
         "Authorization": f"Bearer {ACCESS_TOKEN}",
