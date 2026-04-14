@@ -6,7 +6,7 @@ import os
 app = Flask(__name__)
 
 VERIFY_TOKEN = "carla123"
-ACCESS_TOKEN = os.environ.get("EAAWpLJ0IMf4BRByZAbkXQUgsdO1mhaWcTBwejAQTiEMvVNwOQsd17SYf7X6J8ks2taFoHdZCv1ZB2ZCgHI0WkxoeVAmEQM2vUYZBNstVMbC1L1FlUcEUz0wRXYrGv71vgMGIRo2FLe3W9hcMsplrVaLiXujxJCLIG63zDxAuwVepHQoi3XE4fe9S97IyIIuqztLu7ibPZAXIqsFe9ljBb3SkgA6a0VFb3MfRkkSMh0f7VQ0zgJj8x8nYYE33ZAz2LvCAet45XLoHsASEEZC9ZB9rzNAVk")
+ACCESS_TOKEN = os.environ.get("EAAWpLJ0IMf4BRBPfkoXqHVZABAFvhBsMFDs1wrNYwLzr6EJ9GfaXL22CddnEX50ERpeUG45QA3zVRYjzctUi2TkGCFbH28RmsBCvUrZAKoYJBbVQNBp3ODrHo26KsjJa8FxdgJOo3oE8wlz5V8XO9RmShf7ZCw9spYkmavtPusL4HojuevwO2e3jNzAFN4f6oFW7pai3KZBktYmMWBCWaKARCqtjyZBMR1gHKZCjpM3RgZBLUWJPUEbvYcB7rWcxfLlWT7IoxSpMOIiGMPuswSanZC1VL70ZD")
 PHONE_NUMBER_ID = os.environ.get("1038275629374379")
 
 usuarios = {}
@@ -329,6 +329,10 @@ def salvar_atendimento(tipo, dados):
 
 def enviar_mensagem(numero, texto):
     url = f"https://graph.facebook.com/v25.0/{PHONE_NUMBER_ID}/messages"
+
+    print(
+        "EAAWpLJ0IMf4BRBPfkoXqHVZABAFvhBsMFDs1wrNYwLzr6EJ9GfaXL22CddnEX50ERpeUG45QA3zVRYjzctUi2TkGCFbH28RmsBCvUrZAKoYJBbVQNBp3ODrHo26KsjJa8FxdgJOo3oE8wlz5V8XO9RmShf7ZCw9spYkmavtPusL4HojuevwO2e3jNzAFN4f6oFW7pai3KZBktYmMWBCWaKARCqtjyZBMR1gHKZCjpM3RgZBLUWJPUEbvYcB7rWcxfLlWT7IoxSpMOIiGMPuswSanZC1VL70ZD",
+        ACCESS_TOKEN[:20])
 
     headers = {
         "Authorization": f"Bearer {ACCESS_TOKEN}",
