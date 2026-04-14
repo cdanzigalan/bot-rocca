@@ -330,8 +330,11 @@ def salvar_atendimento(tipo, dados):
 def enviar_mensagem(numero, texto):
     url = f"https://graph.facebook.com/v25.0/{PHONE_NUMBER_ID}/messages"
 
-    print("TOKEN EXISTE?", ACCESS_TOKEN is not None, flush=True)
+    token_prefix = ACCESS_TOKEN[:25] if ACCESS_TOKEN else "TOKEN_VAZIO"
+    print("TOKEN PREFIXO:", token_prefix, flush=True)
+    print("TOKEN TAMANHO:", len(ACCESS_TOKEN) if ACCESS_TOKEN else 0, flush=True)
     print("PHONE_NUMBER_ID:", PHONE_NUMBER_ID, flush=True)
+    print("NUMERO DESTINO:", numero, flush=True)
 
     headers = {
         "Authorization": f"Bearer {ACCESS_TOKEN}",
@@ -344,6 +347,11 @@ def enviar_mensagem(numero, texto):
         "type": "text",
         "text": {"body": texto}
     }
+
+    resposta = requests.post(url, headers=headers, json=payload)
+
+    print("\n📤 STATUS ENVIO:", resposta.status_code, flush=True)
+    print("RESPOSTA META:", resposta.text, flush=True)
 
     resposta = requests.post(url, headers=headers, json=payload)
     print("\n📤 STATUS ENVIO:", resposta.status_code, flush=True)
